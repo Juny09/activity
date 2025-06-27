@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Management System</title>
+    
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+    <div id="app"></div>
+    
+    <!-- Debug script -->
+    <script>
+        console.log('🔍 Debugging Supabase loading...');
+        console.log('Vue loaded:', typeof Vue !== 'undefined');
+        console.log('Supabase loaded:', typeof window.supabase !== 'undefined');
+        
+        if (window.supabase) {
+            console.log('✅ Supabase object:', window.supabase);
+            console.log('✅ createClient function:', typeof window.supabase.createClient);
+        } else {
+            console.error('❌ Supabase not loaded!');
+        }
+    </script>
+    
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
