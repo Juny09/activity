@@ -1,239 +1,363 @@
 <template>
-  <div class="form-container">
+  <div class="activity-form-container">
+    <!-- Form Header -->
     <div class="form-header">
-      <div class="form-icon">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-        </svg>
+      <div class="form-header-content">
+        <div class="form-icon">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+        </div>
+        <div class="form-title-section">
+          <h3 class="form-title">{{ isEdit ? 'Edit Activity' : 'Create New Activity' }}</h3>
+          <p class="form-subtitle">{{ isEdit ? 'Update activity details and settings' : 'Build an engaging team activity from scratch' }}</p>
+        </div>
       </div>
-      <div>
-        <h3 class="form-title">{{ isEdit ? 'Edit Activity' : 'Create New Activity' }}</h3>
-        <p class="form-subtitle">{{ isEdit ? 'Update activity details' : 'Add a new team activity to your collection' }}</p>
+      <div class="form-progress">
+        <div class="progress-indicator">
+          <div class="progress-step" :class="{ active: currentStep >= 1 }">1</div>
+          <div class="progress-line" :class="{ active: currentStep >= 2 }"></div>
+          <div class="progress-step" :class="{ active: currentStep >= 2 }">2</div>
+          <div class="progress-line" :class="{ active: currentStep >= 3 }"></div>
+          <div class="progress-step" :class="{ active: currentStep >= 3 }">3</div>
+        </div>
+        <div class="progress-labels">
+          <span class="progress-label" :class="{ active: currentStep >= 1 }">Basic Info</span>
+          <span class="progress-label" :class="{ active: currentStep >= 2 }">Configuration</span>
+          <span class="progress-label" :class="{ active: currentStep >= 3 }">Tips & Review</span>
+        </div>
       </div>
     </div>
 
+    <!-- Form Content -->
     <form @submit.prevent="handleSubmit" class="form-content">
-      <!-- Activity Name -->
-      <div class="form-group">
-        <label class="form-label required">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-          </svg>
-          Activity Name
-        </label>
-        <input
-          v-model="form.name"
-          type="text"
-          class="form-input"
-          :class="{ 'error': errors.name }"
-          placeholder="Enter a descriptive activity name"
-        />
-        <div v-if="errors.name" class="form-error">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-          </svg>
-          {{ errors.name }}
+      <!-- Step 1: Basic Information -->
+      <div v-show="currentStep === 1" class="form-step" data-step="1">
+        <div class="step-header">
+          <h4 class="step-title">Basic Information</h4>
+          <p class="step-description">Define the core details of your activity</p>
         </div>
-      </div>
 
-      <!-- Description -->
-      <div class="form-group">
-        <label class="form-label required">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
-          </svg>
-          Description
-        </label>
-        <textarea
-          v-model="form.description"
-          class="form-input"
-          :class="{ 'error': errors.description }"
-          rows="4"
-          placeholder="Describe what this activity involves and its purpose"
-        ></textarea>
-        <div v-if="errors.description" class="form-error">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-          </svg>
-          {{ errors.description }}
-        </div>
-      </div>
+        <div class="form-grid">
+          <!-- Activity Name -->
+          <div class="form-group full-width">
+            <label class="form-label required">
 
-      <!-- Form Grid -->
-      <div class="form-grid">
-        <!-- Meeting Type -->
-        <div class="form-group">
-          <label class="form-label required">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-            </svg>
-            Meeting Type
-          </label>
-          <div class="select-wrapper">
-            <select
-              v-model="form.meetingType"
+              Activity Name
+            </label>
+            <input
+              v-model="form.name"
+              type="text"
               class="form-input"
-              :class="{ 'error': errors.meetingType }"
-            >
-              <option value="">Select meeting type</option>
-              <option v-for="type in meetingTypes" :key="type" :value="type">
-                {{ type }}
-              </option>
-            </select>
+              :class="{ 'error': errors.name }"
+              placeholder="Enter a descriptive activity name..."
+              maxlength="100"
+            />
+            <div class="input-helper">
+              <span class="character-count">{{ form.name.length }}/100</span>
+            </div>
+            <div v-if="errors.name" class="form-error">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
+              </svg>
+              {{ errors.name }}
+            </div>
           </div>
-          <div v-if="errors.meetingType" class="form-error">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-            </svg>
-            {{ errors.meetingType }}
-          </div>
-        </div>
 
-        <!-- Team Size -->
-        <div class="form-group">
-          <label class="form-label">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
-            </svg>
-            Team Size
-          </label>
-          <div class="select-wrapper">
-            <select v-model="form.teamSize" class="form-input">
-              <option value="">Select team size</option>
-              <option v-for="size in teamSizes" :key="size" :value="size">
-                {{ size }}
-              </option>
-            </select>
+          <!-- Description -->
+          <div class="form-group full-width">
+            <label class="form-label required">
+              Description
+            </label>
+            <textarea
+              v-model="form.description"
+              class="form-input"
+              :class="{ 'error': errors.description }"
+              rows="4"
+              placeholder="Describe what this activity involves, its purpose, and expected outcomes..."
+              maxlength="500"
+            ></textarea>
+            <div class="input-helper">
+              <span class="character-count">{{ form.description.length }}/500</span>
+            </div>
+            <div v-if="errors.description" class="form-error">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
+              </svg>
+              {{ errors.description }}
+            </div>
           </div>
-        </div>
 
-        <!-- Location -->
-        <div class="form-group">
-          <label class="form-label">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            Location
-          </label>
-          <div class="select-wrapper">
-            <select v-model="form.location" class="form-input">
-              <option value="">Select location</option>
-              <option v-for="location in locations" :key="location" :value="location">
-                {{ location }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Time Required -->
-        <div class="form-group">
-          <label class="form-label">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            Time Required
-          </label>
-          <div class="select-wrapper">
-            <select v-model="form.timeRequired" class="form-input">
-              <option value="">Select time</option>
-              <option v-for="time in timeOptions" :key="time" :value="time">
-                {{ time }}
-              </option>
-            </select>
+          <!-- Sport Type -->
+          <div class="form-group">
+            <label class="form-label required">
+              Sport Type
+            </label>
+            <div class="select-wrapper">
+              <select
+                v-model="form.sportType"
+                class="form-input"
+                :class="{ 'error': errors.sportType }"
+              >
+                <option value="">Select Sport type</option>
+                <option v-for="type in sportTypes" :key="type.value" :value="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+            </div>
+            <div v-if="errors.sportType" class="form-error">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
+              </svg>
+              {{ errors.sportType }}
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Facilitation Tips -->
-      <div class="form-group">
-        <label class="form-label">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-          </svg>
-          Facilitation Tips
-        </label>
-        <div class="tips-input-group">
-          <input
-            v-model="tipInput"
-            type="text"
-            class="form-input tip-input"
-            placeholder="Add a helpful facilitation tip"
-            @keyup.enter="addTip"
-          />
-          <button
-            type="button"
-            @click="addTip"
-            class="btn-secondary add-tip-btn"
-            :disabled="!tipInput.trim()"
-          >
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Add
-          </button>
+      <!-- Step 2: Configuration -->
+      <div v-show="currentStep === 2" class="form-step" data-step="2">
+        <div class="step-header">
+          <h4 class="step-title">Activity Configuration</h4>
+          <p class="step-description">Set up the logistics and requirements</p>
         </div>
 
-        <div v-if="form.facilitationTips.length > 0" class="tips-list">
-          <transition-group name="tip" tag="div" class="tips-container">
-            <div
-              v-for="(tip, index) in form.facilitationTips"
-              :key="`tip-${index}`"
-              class="tip-item"
-            >
-              <div class="tip-content">
-                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                </svg>
-                <span>{{ tip }}</span>
+        <div class="form-grid">
+          <!-- Team Size -->
+          <div class="form-group">
+            <label class="form-label">
+
+              Team Size
+            </label>
+            <div class="select-wrapper">
+              <select v-model="form.teamSize" class="form-input">
+                <option value="">Select team size</option>
+                <option v-for="size in teamSizes" :key="size.value" :value="size.value">
+                  {{ size.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="form-group">
+            <label class="form-label">
+              Location
+            </label>
+            <div class="select-wrapper">
+              <select v-model="form.location" class="form-input">
+                <option value="">Select location</option>
+                <option v-for="location in locations" :key="location.value" :value="location.value">
+                  {{ location.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Time Required -->
+          <div class="form-group">
+            <label class="form-label">
+              Time Required
+            </label>
+            <div class="select-wrapper">
+              <select v-model="form.timeRequired" class="form-input">
+                <option value="">Select duration</option>
+                <option v-for="time in timeOptions" :key="time.value" :value="time.value">
+                  {{ time.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Difficulty Level -->
+          <div class="form-group">
+            <label class="form-label">
+              Difficulty Level
+            </label>
+            <div class="difficulty-selector">
+              <div
+                v-for="level in difficultyLevels"
+                :key="level.value"
+                class="difficulty-option"
+                :class="{ active: form.difficulty === level.value }"
+                @click="form.difficulty = level.value"
+              >
+                <div class="difficulty-icon" :class="level.class">
+                  <component :is="level.icon" class="w-4 h-4" />
+                </div>
+                <span class="difficulty-label">{{ level.label }}</span>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Tips & Review -->
+      <div v-show="currentStep === 3" class="form-step" data-step="3">
+        <div class="step-header">
+          <h4 class="step-title">Facilitation Tips & Review</h4>
+          <p class="step-description">Add helpful tips and review your activity</p>
+        </div>
+
+        <!-- Facilitation Tips -->
+        <div class="form-group full-width">
+          <label class="form-label">
+            Facilitation Tips
+          </label>
+          <div class="tips-input-section">
+            <div class="tip-input-group">
+              <input
+                v-model="tipInput"
+                type="text"
+                class="form-input tip-input"
+                placeholder="Add a helpful facilitation tip or best practice..."
+                maxlength="200"
+                @keyup.enter="addTip"
+              />
               <button
                 type="button"
-                @click="removeTip(index)"
-                class="remove-tip-btn"
+                @click="addTip"
+                class="add-tip-btn"
+                :disabled="!tipInput.trim()"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                 </svg>
+                Add Tip
               </button>
             </div>
-          </transition-group>
+            <div class="input-helper">
+              <span class="character-count">{{ tipInput.length }}/200</span>
+            </div>
+          </div>
+
+          <!-- Tips List -->
+          <div v-if="form.facilitationTips.length > 0" class="tips-list">
+            <h5 class="tips-title">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+              </svg>
+              Facilitation Tips ({{ form.facilitationTips.length }})
+            </h5>
+            <transition-group name="tip" tag="div" class="tips-container">
+              <div
+                v-for="(tip, index) in form.facilitationTips"
+                :key="`tip-${index}`"
+                class="tip-item"
+              >
+                <div class="tip-content">
+                  <div class="tip-number">{{ index + 1 }}</div>
+                  <span class="tip-text">{{ tip }}</span>
+                </div>
+                <button
+                  type="button"
+                  @click="removeTip(index)"
+                  class="remove-tip-btn"
+                  title="Remove tip"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+            </transition-group>
+          </div>
+        </div>
+
+        <!-- Activity Summary -->
+        <div class="activity-summary">
+          <h5 class="summary-title">Activity Summary</h5>
+          <div class="summary-content">
+            <div class="summary-item">
+              <span class="summary-label">Name:</span>
+              <span class="summary-value">{{ form.name || 'Not specified' }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Type:</span>
+              <span class="summary-value">{{ form.sportType || 'Not specified' }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Team Size:</span>
+              <span class="summary-value">{{ form.teamSize || 'Any size' }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Duration:</span>
+              <span class="summary-value">{{ form.timeRequired || 'Flexible' }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Location:</span>
+              <span class="summary-value">{{ form.location || 'Any location' }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Tips:</span>
+              <span class="summary-value">{{ form.facilitationTips.length }} tip{{ form.facilitationTips.length !== 1 ? 's' : '' }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Form Actions -->
-      <div class="form-actions">
-        <button
-          type="button"
-          @click="handleCancel"
-          class="btn-secondary cancel-btn"
-        >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-          Cancel
-        </button>
-        <button
-          type="submit"
-          class="btn-primary submit-btn"
-          :disabled="isSubmitting"
-        >
-          <svg v-if="isSubmitting" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <svg v-else class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          {{ isEdit ? 'Update Activity' : 'Create Activity' }}
-        </button>
+      <!-- Form Navigation -->
+      <div class="form-navigation">
+        <div class="nav-buttons">
+          <button
+            v-if="currentStep > 1"
+            type="button"
+            @click="previousStep"
+            class="nav-btn secondary"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Previous
+          </button>
+
+          <button
+            type="button"
+            @click="handleCancel"
+            class="nav-btn cancel"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Cancel
+          </button>
+
+          <button
+            v-if="currentStep < 3"
+            type="button"
+            @click="nextStep"
+            class="nav-btn primary"
+            :disabled="!canProceed"
+          >
+            Next
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+
+          <button
+            v-if="currentStep === 3"
+            type="submit"
+            class="nav-btn primary submit"
+            :disabled="isSubmitting || !isFormValid"
+          >
+            <svg v-if="isSubmitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+            </svg>
+            <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            {{ isEdit ? 'Update Activity' : 'Create Activity' }}
+          </button>
+        </div>
       </div>
     </form>
   </div>
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 export default {
   name: 'ActivityForm',
@@ -249,13 +373,16 @@ export default {
   },
   emits: ['submit', 'cancel'],
   setup(props, { emit }) {
+    // Reactive state
+    const currentStep = ref(1);
     const form = ref({
       name: '',
       description: '',
-      meetingType: '',
+      sportType: '',
       teamSize: '',
       location: '',
       timeRequired: '',
+      difficulty: '',
       facilitationTips: []
     });
 
@@ -263,20 +390,78 @@ export default {
     const errors = ref({});
     const isSubmitting = ref(false);
 
-    const meetingTypes = [
-      'Team Building',
-      'Brainstorming',
-      'Retrospective',
-      'Kickoff Meeting',
-      'Problem Solving',
-      'Strategy Session',
-      'Creative Workshop',
-      'All Hands Meeting'
+    // Form options
+    const sportTypes = [
+      { value: 'Badminton', label: 'Badminton' },
+      { value: 'Basketball', label: 'Basketball' },
+      { value: 'Golf', label: 'Golf' },
+      { value: 'Tennis', label: 'Tennis' },
+      { value: 'Table Tennis', label: 'Table Tennis' },
+      { value: 'Volleyball', label: 'Volleyball' },
+      { value: 'Pickle Ball', label: 'Pickle Ball' },
+      { value: 'Other', label: 'Other' }
+
     ];
 
-    const teamSizes = ['2-5 people', '6-10 people', '11-20 people', '20+ people'];
-    const locations = ['In-person', 'Virtual', 'Hybrid'];
-    const timeOptions = ['5-10 minutes', '15-20 minutes', '30 minutes', '45-60 minutes'];
+    const teamSizes = [
+      { value: '2-5', label: '2-5 people (Small team)' },
+      { value: '6-10', label: '6-10 people (Medium team)' },
+      { value: '11-20', label: '11-20 people (Large team)' },
+      { value: '20+', label: '20+ people (Enterprise)' }
+    ];
+
+    const locations = [
+      { value: 'KL', label: 'Kuala Lumpur' },
+      { value: 'KSL', label: 'KSL' },
+      { value: 'Serdang', label: 'Serdang' },
+      { value: 'Subang', label: 'Subang' },
+      { value: 'Cyberjaya', label: 'Cyberjaya' },
+      { value: 'Other', label: 'Other' }
+    ];
+
+    const timeOptions = [
+      { value: '1', label: 'One hour' },
+      { value: '1.5', label: 'One and a half hours' },
+      { value: '2', label: 'Two hours' },
+      { value: '2.5', label: 'Two and a half hours' },
+      { value: '3', label: 'Three hours' }
+    ];
+
+    const difficultyLevels = [
+      {
+        value: 'easy',
+        label: 'Easy',
+        class: 'easy',
+        icon: 'CheckCircleIcon'
+      },
+      {
+        value: 'medium',
+        label: 'Medium',
+        class: 'medium',
+        icon: 'ExclamationCircleIcon'
+      },
+      {
+        value: 'hard',
+        label: 'Hard',
+        class: 'hard',
+        icon: 'FireIcon'
+      }
+    ];
+
+    // Computed properties
+    const canProceed = computed(() => {
+      if (currentStep.value === 1) {
+        return form.value.name.trim() && form.value.description.trim() && form.value.sportType;
+      }
+      return true;
+    });
+
+    const isFormValid = computed(() => {
+      return form.value.name.trim() &&
+             form.value.description.trim() &&
+             form.value.sportType &&
+             Object.keys(errors.value).length === 0;
+    });
 
     // Watch for activity prop changes
     watch(() => props.activity, (newActivity) => {
@@ -284,18 +469,57 @@ export default {
         form.value = {
           name: newActivity.name || '',
           description: newActivity.description || '',
-          meetingType: newActivity.meeting_type || '',
+          sportType: newActivity.sport_type || '',
           teamSize: newActivity.team_size || '',
           location: newActivity.location || '',
           timeRequired: newActivity.time_required || '',
+          difficulty: newActivity.difficulty || '',
           facilitationTips: newActivity.facilitation_tips || []
         };
       }
     }, { immediate: true });
 
+    // Methods
+    const nextStep = () => {
+      if (validateCurrentStep() && currentStep.value < 3) {
+        currentStep.value++;
+      }
+    };
+
+    const previousStep = () => {
+      if (currentStep.value > 1) {
+        currentStep.value--;
+      }
+    };
+
+    const validateCurrentStep = () => {
+      errors.value = {};
+
+      if (currentStep.value === 1) {
+        if (!form.value.name.trim()) {
+          errors.value.name = 'Activity name is required';
+        } else if (form.value.name.length > 100) {
+          errors.value.name = 'Activity name must be 100 characters or less';
+        }
+
+        if (!form.value.description.trim()) {
+          errors.value.description = 'Description is required';
+        } else if (form.value.description.length > 500) {
+          errors.value.description = 'Description must be 500 characters or less';
+        }
+
+        if (!form.value.sportType) {
+          errors.value.sportType = 'Sport type is required';
+        }
+      }
+
+      return Object.keys(errors.value).length === 0;
+    };
+
     const addTip = () => {
-      if (tipInput.value.trim()) {
-        form.value.facilitationTips.push(tipInput.value.trim());
+      const tip = tipInput.value.trim();
+      if (tip && tip.length <= 200) {
+        form.value.facilitationTips.push(tip);
         tipInput.value = '';
       }
     };
@@ -304,33 +528,20 @@ export default {
       form.value.facilitationTips.splice(index, 1);
     };
 
-    const validateForm = () => {
-      errors.value = {};
-
-      if (!form.value.name.trim()) {
-        errors.value.name = 'Activity name is required';
-      }
-
-      if (!form.value.description.trim()) {
-        errors.value.description = 'Description is required';
-      }
-
-      if (!form.value.meetingType) {
-        errors.value.meetingType = 'Meeting type is required';
-      }
-
-      return Object.keys(errors.value).length === 0;
-    };
-
     const handleSubmit = async () => {
-      if (validateForm()) {
-        isSubmitting.value = true;
-        try {
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-          emit('submit', { ...form.value });
-        } finally {
-          isSubmitting.value = false;
-        }
+      if (!validateCurrentStep() || !isFormValid.value) {
+        return;
+      }
+
+      isSubmitting.value = true;
+      try {
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        emit('submit', { ...form.value });
+      } catch (error) {
+        console.error('Form submission error:', error);
+      } finally {
+        isSubmitting.value = false;
       }
     };
 
@@ -339,14 +550,27 @@ export default {
     };
 
     return {
+      // State
+      currentStep,
       form,
       tipInput,
       errors,
       isSubmitting,
-      meetingTypes,
+
+      // Options
+      sportTypes,
       teamSizes,
       locations,
       timeOptions,
+      difficultyLevels,
+
+      // Computed
+      canProceed,
+      isFormValid,
+
+      // Methods
+      nextStep,
+      previousStep,
       addTip,
       removeTip,
       handleSubmit,
@@ -357,74 +581,223 @@ export default {
 </script>
 
 <style scoped>
-.form-container {
-  background: white;
-  border-radius: var(--radius-2xl);
+
+.activity-form-container {
   max-width: 800px;
   margin: 0 auto;
-  box-shadow: var(--shadow-2xl);
-  overflow: hidden;
 }
 
+/* Form Header */
 .form-header {
-  background: var(--gradient-primary);
-  color: white;
-  padding: 2rem;
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.form-header-content {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  margin-bottom: var(--space-6);
 }
 
 .form-icon {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+  color: white;
+  padding: var(--space-4);
   border-radius: var(--radius-xl);
+  margin-right: var(--space-4);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.form-title-section {
+  text-align: left;
+}
+
 .form-title {
   font-size: 1.5rem;
   font-weight: 700;
-  margin: 0;
+  color: #000;
+  margin-bottom: var(--space-1);
 }
 
 .form-subtitle {
-  opacity: 0.9;
-  margin-top: 0.5rem;
+  color: #333;
   font-size: 0.875rem;
 }
 
-.form-content {
-  padding: 2rem;
+/* Progress Indicator */
+.form-progress {
+  margin-bottom: var(--space-6);
 }
 
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.progress-step {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #333;
+  transition: all var(--transition-normal);
+}
+
+.progress-step.active {
+  background: var(--primary-600);
+  border-color: #000;
+  color: #000;
+}
+
+.progress-line {
+  width: 60px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-normal);
+}
+
+.progress-line.active {
+  background: var(--primary-500);
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  color: #000;
+  transition: color var(--transition-normal);
+}
+
+.progress-label.active {
+  color: #000;
+  font-weight: 600;
+}
+
+/* Form Content */
+.form-content {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.form-step {
+  display: block;
+}
+
+.step-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.step-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: var(--space-2);
+}
+
+.step-description {
+  color: #000;
+}
+
+/* Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+}
+
+/* Form Groups */
 .form-group {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-6);
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
 .form-label {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-sm);
   font-weight: 600;
-  color: var(--secondary-700);
+  color: #000;
   margin-bottom: var(--space-2);
+  font-size: 0.875rem;
 }
 
 .form-label.required::after {
   content: '*';
-  color: var(--error-500);
-  margin-left: 0.25rem;
+  color: #000;
+  margin-left: var(--space-1);
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+.form-label svg {
+  margin-right: var(--space-2);
+  transition: transform var(--transition-fast);
 }
 
+/* Form Inputs */
+.form-input,
+.form-select {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(43, 34, 34, 0.2);
+  border-radius: var(--radius-lg);
+  color: #000;
+  font-size: 0.875rem;
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(10px);
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 0 3px rgba(14, 165, 233, 0.1),
+    0 8px 20px rgba(14, 165, 233, 0.2);
+  transform: translateY(-1px);
+}
+
+.form-input.error,
+.form-select.error {
+  border-color: var(--error-400);
+  background: rgba(239, 68, 68, 0.1);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.form-input::placeholder {
+  color: #000;
+}
+
+/* Select Wrapper */
 .select-wrapper {
   position: relative;
 }
@@ -432,25 +805,115 @@ export default {
 .select-wrapper::after {
   content: '';
   position: absolute;
-  right: 1rem;
+  right: var(--space-3);
   top: 50%;
   transform: translateY(-50%);
   width: 0;
   height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid var(--secondary-400);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #000;
   pointer-events: none;
 }
 
-.tips-input-group {
+/* Form Helpers */
+.form-error {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  align-items: center;
+  gap: var(--space-2);
+  color: #000;
+  font-size: 0.75rem;
+  margin-top: var(--space-1);
+}
+
+.input-helper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-1);
+}
+
+.character-count {
+  font-size: 0.75rem;
+  color: #000;
+}
+
+/* Difficulty Selector */
+.difficulty-selector {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.difficulty-option {
+  flex: 1;
+  min-width: 100px;
+  padding: var(--space-1);
+  background: rgba(253, 253, 253, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  color: #000;
+}
+
+.difficulty-option.active {
+  background: var(--primary-600);
+  border-color: #000;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.difficulty-option:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--primary-400);
+}
+
+.difficulty-icon {
+  margin-bottom: var(--space-2);
+}
+
+.difficulty-icon.easy { color: #000; }
+.difficulty-icon.medium { color: #000; }
+.difficulty-icon.hard { color: #000; }
+
+.difficulty-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Tips Section */
+.tips-input-section {
+  margin-bottom: var(--space-4);
+}
+
+.tip-input-group {
+  display: flex;
+  gap: var(--space-3);
 }
 
 .tip-input {
   flex: 1;
+}
+
+.add-tip-btn {
+  background: var(--accent-600);
+  color: white;
+  border: none;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all var(--transition-normal);
+}
+
+.add-tip-btn:hover:not(:disabled) {
+  background: var(--accent-700);
 }
 
 .add-tip-btn:disabled {
@@ -459,116 +922,250 @@ export default {
 }
 
 .tips-list {
-  margin-top: 1rem;
+  margin-top: var(--space-4);
+}
+
+.tips-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+  color: #000;
+  margin-bottom: var(--space-3);
 }
 
 .tips-container {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-2);
 }
 
 .tip-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: var(--warning-50);
-  border: 1px solid var(--warning-200);
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-lg);
-  padding: 1rem;
-  transition: all 0.2s ease;
 }
 
 .tip-content {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   flex: 1;
-  font-size: var(--font-size-sm);
-  color: var(--secondary-700);
 }
 
-.remove-tip-btn {
-  background: var(--error-50);
-  color: var(--error-600);
-  border: none;
-  padding: 0.5rem;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s ease;
+.tip-number {
+  background: var(--primary-600);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  color: #000;
+  font-size: 0.875rem;
+}
+
+.remove-tip-btn {
+  background: var(--error-600);
+  color: white;
+  border: none;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
 }
 
 .remove-tip-btn:hover {
-  background: var(--error-100);
+  background: var(--error-700);
 }
 
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding-top: 2rem;
-  border-top: 2px solid var(--secondary-100);
-  margin-top: 2rem;
+/* Tip transitions */
+.tip-enter-active,
+.tip-leave-active {
+  transition: all var(--transition-normal);
 }
 
-.cancel-btn {
-  min-width: 120px;
-}
-
-.submit-btn {
-  min-width: 150px;
-}
-
-/* Transitions */
-.tip-enter-active, .tip-leave-active {
-  transition: all 0.3s ease;
-}
-
-.tip-enter-from {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
+.tip-enter-from,
 .tip-leave-to {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translateX(-20px);
 }
 
+.tip-move {
+  transition: transform var(--transition-normal);
+}
+
+/* Activity Summary */
+.activity-summary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+.summary-title {
+  font-weight: 700;
+  color: #000;
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.summary-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.summary-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.summary-value {
+  color: #000;
+  font-weight: 500;
+}
+
+/* Form Navigation */
+.form-navigation {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-btn.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-btn.cancel {
+  background: var(--error-600);
+  color: white;
+}
+
+.nav-btn.primary {
+  background: var(--primary-600);
+  color: white;
+}
+
+.nav-btn.submit {
+  background: linear-gradient(135deg, var(--success-600), var(--success-500));
+  color: white;
+}
+
+.nav-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Enhanced button gradients with shine effect */
+.nav-btn.primary,
+.nav-btn.submit {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-btn.primary::before,
+.nav-btn.submit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent);
+  transition: left 0.5s ease;
+}
+
+.nav-btn.primary:hover::before,
+.nav-btn.submit:hover::before {
+  left: 100%;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .form-container {
-    border-radius: var(--radius-xl);
-    margin: 0;
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 
-  .form-header {
-    padding: 1.5rem;
+  .nav-buttons {
     flex-direction: column;
-    text-align: center;
+  }
+
+  .difficulty-selector {
+    flex-direction: column;
+  }
+
+  .difficulty-option {
+    min-width: auto;
+  }
+
+  .summary-content {
+    grid-template-columns: 1fr;
   }
 
   .form-content {
-    padding: 1.5rem;
+    padding: var(--space-4);
   }
+}
 
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .tips-input-group {
+@media (max-width: 480px) {
+  .tip-input-group {
     flex-direction: column;
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-  }
-
-  .cancel-btn,
-  .submit-btn {
-    width: 100%;
   }
 }
 </style>
